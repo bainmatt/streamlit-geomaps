@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "notebooks/report.html",
+    "href": "notebooks/report.html",
+    "title": "ZIP code-level choropleth maps with Plotly and Streamlit",
+    "section": "",
+    "text": "[…]"
+  },
+  {
+    "objectID": "notebooks/report.html#imports",
+    "href": "notebooks/report.html#imports",
+    "title": "ZIP code-level choropleth maps with Plotly and Streamlit",
+    "section": "Imports",
+    "text": "Imports\n\n\nCode\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom IPython.display import display as display3\n\nfrom src.paths import get_path_to\nfrom src.stylesheet import customize_plots\nfrom src.inspection import display, display2"
+  },
+  {
+    "objectID": "notebooks/report.html#the-dataset",
+    "href": "notebooks/report.html#the-dataset",
+    "title": "ZIP code-level choropleth maps with Plotly and Streamlit",
+    "section": "The dataset",
+    "text": "The dataset\n\n\nLoad\nif 'data' not in locals():\n    # data = pd.read_csv(\n    #     get_path_to(\"data\", \"raw\", \"\"),\n    #     encoding='ISO-8859-1',\n    #     low_memory=False\n    # )\n    pass\nelse:\n    print(\"data loaded.\")\n\n\n\n\nDisplay a subset\n# data.sample(5)\n\n\n\n\nDisplay a summary\n# data.describe().round(1).reset_index()"
+  },
+  {
+    "objectID": "notebooks/TODO.html",
+    "href": "notebooks/TODO.html",
+    "title": "Roadmap",
+    "section": "",
+    "text": "initialize git repo\ndownsample counties"
+  },
+  {
+    "objectID": "notebooks/TODO.html#setup",
+    "href": "notebooks/TODO.html#setup",
+    "title": "Roadmap",
+    "section": "setup",
+    "text": "setup\n\ncreate environment on T7 (change ‘.env’ PYTHONPATH)\ninstall streamlit\ncheck rendering of site"
+  },
+  {
+    "objectID": "notebooks/TODO.html#app.py",
+    "href": "notebooks/TODO.html#app.py",
+    "title": "Roadmap",
+    "section": "app.py",
+    "text": "app.py\n\nload zip code data into python (as geojson?)\ncreate plotly heatmap of polygons\nhost on streamlit"
+  },
+  {
+    "objectID": "notebooks/TODO.html#refinements",
+    "href": "notebooks/TODO.html#refinements",
+    "title": "Roadmap",
+    "section": "refinements",
+    "text": "refinements\npart 0\n\nfunction to load data from link\nclone app & extract jsons\n\npart 1\n\nfunc to save all modules matching pattern from git repo, add outdir arg\nsave clickthat geojsons save and extract geojson zips\nsave state names: acronyms as txt file\n\npart 3\n\nextract state names in get_state_lookup() to lookup dict\nfunc to extract {ste_name: {coty_name: [zcta5_code]}} lookup dict\nfunc to plot all zcta5_code’s on map for a given (ste_name, coty_name)\nsign up for mapbox and get free tier token, use mapbox and edit layer\nuse zip index for color and include in tooltip\ncheck zips, use custom palettes, clean up\nparse: st jsons + plt w coty_name as id (poly for st w geo union/diss)\n?add primary dropdown for State and filter second for cty with above\n\n\nzip-codes\nload-medium\nplotly-zipcode\nstreamlit-host\nload-mapbox\nplotly-polygons\ngpt"
+  }
+]
