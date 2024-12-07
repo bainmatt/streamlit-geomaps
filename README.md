@@ -10,6 +10,18 @@ and ZIP code-level resolution.
 
 View the report [here](https://bainmatt.github.io/streamlit-geomaps/notebooks/report.html).
  -->
+
+## Example
+
+A state-level view of Ohio, USA, with choropleths representing its counties:
+
+![ohio_choropleth](output/figures/ohio_choropleth.png)
+
+A county-level view of Athens, Ohio, with choropleths representing its ZIP
+codes:
+
+![ohio_athens_choropleth](output/figures/ohio_athens_choropleth.png)
+
 ## Tools
 
 This project uses the following tools:

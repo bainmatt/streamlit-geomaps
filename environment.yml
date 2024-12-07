@@ -47,6 +47,7 @@ dependencies:
 
   # ETL
   - requests
+  - gdown
   # - pydantic
   # - bs4
   # - mysql

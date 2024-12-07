@@ -9,6 +9,7 @@ To run the streamlit app:
 import os
 import re
 import json
+import gdown
 import geojson
 import requests
 import urllib.request
@@ -27,9 +28,32 @@ from src.paths import get_path_to
 from src.colors import get_palette, rgb_to_hex
 
 from dotenv import load_dotenv
+
 load_dotenv()
+
+GDRIVE_URL = (
+    "https://drive.google.com/drive/folders/"
+    "1Zdt8bkAWc_iIwSCUNhkXEjXxPLraKkxd?usp=sharing"
+)
 DATA_PATH = Path(os.getenv('DATA_PATH', get_path_to('data')))
 lookup_dict_type = dict[str, dict[str, list[str]]]
+
+
+def download_gdrive_folder(
+    folder_url: str = GDRIVE_URL,
+    download_path: Path = get_path_to('data'),
+    download_dir: str = "geojson_files"
+):
+    """
+    Download all files from a Google Drive folder.
+    """
+    download_path = download_path / download_dir
+    download_path.mkdir(parents=True, exist_ok=True)
+
+    print(f'Downloading folder from: {folder_url}')
+    gdown.download_folder(
+        folder_url, output=str(download_path), quiet=False
+    )
 
 
 def extract_zip_lookup(
@@ -795,11 +819,16 @@ def main():
     # zip_lookup = extract_zip_lookup(input_file="georef_united_states.geojson")
     # save_lookup_dict(zip_lookup, 'zip_lookup.json')
 
+    # For use in a cloud-based application
+    geojson_folder = Path(DATA_PATH / 'geojson_files')
+    if not geojson_folder.exists() or not any(geojson_folder.iterdir()):
+        download_gdrive_folder()
+
     # -- Orchestrate ---------------------------------------------------------
 
     # 2. Parse GeoJSON files
 
-    extract_state_data('New Mexico')
+    # extract_state_data('New Mexico')
 
     # 4. Run app
 

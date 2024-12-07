@@ -2,7 +2,8 @@
 
 # Raw data
 data/raw/*
-data/
+data/*
+!data/zip_lookup.json
 
 # SQLite database files
 notebooks/*.db
