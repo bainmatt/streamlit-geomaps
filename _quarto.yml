@@ -1,0 +1,35 @@
+project:
+  type: website
+
+# -- Optional additions ------------------------------------------------------
+
+# execute:
+#   freeze: auto
+
+website:
+  title: "Choropleth maps in Streamlit"
+  description: "A report"
+  site-url: https://bainmatt.github.io/streamlit-geomaps/
+  repo-url: https://github.com/bainmatt/streamlit-geomaps
+  open-graph: true
+  search: false
+  navbar:
+    title: false
+  #   background: "#eee"
+    left:
+      - href: notebooks/report.ipynb
+        text: "Report"
+      # - href: notebooks/sql_qs.ipynb
+      #   text: "SQL exercises"
+  page-footer:
+    center:
+      - href: https://bainmatt.github.io/
+        text: bainmatt.github.io
+
+format:
+  html:
+    theme: ember
+    # css: styles.css
+    # theme:
+    #   light: flatly
+    #   dark: darkly

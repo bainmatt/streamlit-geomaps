@@ -1,0 +1,21 @@
+; Linting configuration.
+
+[flake8]
+; ideal: 81px
+max-line-length = 120
+statistics = True
+count = True
+ignore =
+    ; too many leading '#' for block comment
+    E266
+    ; multiple spaces before operator
+    E221
+    ; imported but not used
+    ; F401
+    ; line break before binary operator
+    W503
+    ; line break after binary operator
+    W504
+exclude =
+    src/archive/*
+    ; src/analysis.py

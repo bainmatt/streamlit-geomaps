@@ -1,0 +1,89 @@
+# Options specified here will apply to all notebooks in this folder
+
+author: "Matthew Bain"
+date: today
+date-modified: today
+
+# Default formatting options
+format:
+  html:
+    html-table-processing: none
+  ipynb: default
+  # typst: default
+format-links:
+  - html
+  - ipynb
+  # - format: typst
+  #   text: PDF
+  #   icon: file-pdf
+
+# Freeze computed outputs
+freeze: true
+
+# Default fields for table of contents
+toc: true
+toc-depth: 3
+toc-location: left
+toc-title: Table of contents
+toc-expand: true
+
+# Default knitr options
+execute:
+  echo: true
+  message: false
+  warning: false
+
+# Default fields for title block and headers
+number-sections: false
+abstract-title: abstract
+
+# Enable CC licence appendix
+license: "CC BY"
+
+# Enable citation appendix
+citation: true
+
+# Default fields for cross-referencing
+crossrefs-hover: true
+footnotes-hover: true
+citations-hover: true
+notebook-links: true
+
+# Default fields for figures
+fig-format: svg
+fig-align: center
+cap-location: bottom
+
+# Default fields for tables
+df-print: paged
+
+# Default fields for math
+# self-contained-math: true
+
+# Default fields for code blocks
+code-link: true
+code-fold: show
+code-copy: hover
+code-line-numbers: false
+code-tools:
+  source: repo
+  toggle: true
+  caption: none
+
+# Default fields for HTML text output
+strip-comments: true
+
+# Default css and bib files
+# css: ../../generic-css.css
+# bibliography: ../../generic-bib.bib
+
+# Link to shared environment lock file by default
+code-links:
+  - text: Lockfile
+    icon: file-lock
+    href: https://github.com/bainmatt/streamlit-geomaps/tree/main/environment.yml
+
+# urls:
+#   - pandas: https://pandas.pydata.org/pandas-docs/stable/
+#   - numpy: https://numpy.org/doc/stable/
+#   - base: https://docs.python.org/3/

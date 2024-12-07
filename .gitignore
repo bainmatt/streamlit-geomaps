@@ -1,0 +1,93 @@
+# --- Misc ---
+
+# Raw data
+data/raw/*
+data/
+
+# SQLite database files
+notebooks/*.db
+notebooks/*.db-journal
+
+# Local rendering outputs
+notebooks/*_files
+notebooks/*.out.ipynb
+notebooks/*.typ
+notebooks/*.html
+
+# Exploratory notebooks
+
+# TODOs
+*TODO.md
+
+# Streamlit configuration
+.streamlit/
+
+# --- System config/cache ---
+
+# IDE
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# OS
+*.DS_Store
+
+# --- Environment ---
+
+requirements_conda.txt
+requirements_pip.txt
+
+# --- Keys/Settings ---
+
+.env
+_settings.py
+
+# --- Ignorables ---
+
+# Archived files/folders (irrespective of subdirectory/basename)
+**/archive/
+archive/
+*_archive
+_.vscode
+
+# --- Dev artifacts ---
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# pyenv
+.python-version
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Testing ---
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*.cover
+.hypothesis/
+.benchmarks/
+
+# --- Typing ---
+
+# mypy
+.mypy_cache/
+
+# --- Docs ---
+
+# Quarto
+/.quarto/
+/_site/

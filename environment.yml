@@ -1,0 +1,91 @@
+# To create & activate environment {name} from this file, run:
+#
+#   (1.0) $ conda env create -f environment.yml
+#   (2.0) $ conda activate {name}
+#
+# This env was pointed to, created and activated on, an external drive by:
+# 
+#   (0.0) $ conda config --append envs_dirs /Volumes/Samsung_T5/conda-environments
+#   (1.0) $ conda env create --prefix /Volumes/Samsung_T5/conda-environments/streamlit-geomaps --file environment.yml
+#   (2.1) $ conda deactivate
+#   (2.2) $ conda activate /Volumes/Samsung_T5/conda-environments/streamlit-geomaps
+#   (2.3) <setting the vscode interpreter to that of the same environment>
+#   (3.0) <setting '.env' `PYTHONPATH` variable to .:/Volumes/Samsung_T5/conda-environments/streamlit-geomaps/lib/python3.11/site-packages
+# 
+# To check that the environment has been successfully activated (has *):
+# 
+#   (0.0) $ conda info --envs
+# 
+
+name: streamlit-geomaps
+prefix: /Volumes/Samsung_T5/conda-environments/streamlit-geomaps
+
+channels:
+  - apple
+  - conda-forge
+
+dependencies:
+  - python=3.11
+  - pip>=19.0
+  - jupyter
+  - pandas
+  - numpy
+
+  # Dataviz
+  - matplotlib
+  - seaborn
+  - plotly
+  - geopandas
+  - geopy
+  - geojson
+
+  # Stats
+  # - scikit-learn
+  # - scipy
+  # - statsmodels
+  # - arviz
+
+  # ETL
+  - requests
+  # - pydantic
+  # - bs4
+  # - mysql
+
+  # Ensures pycurl and wptools are installed correctly
+  # - openssl
+  # - pycurl
+
+  # Secure API key retrieval
+  - python-dotenv
+
+  - pip:
+    # Stats
+    # - bambi
+
+    # Tables
+    # - great-tables
+    # - polars
+    # - pyarrow
+    # - tabulate
+
+    # Dashboards
+    - streamlit
+
+    # EDA
+    # - holidays
+
+    # SQL
+    # - mysql
+    # - mysqlclient
+    # - mysql-connector-python
+    # - PyMySQL
+    # - jsonschema
+
+    # Typing / testing / linting
+    # run `mypy --install-types` to install missing stubs. Pandas given below.
+    - mypy
+    - pandas-stubs
+    - types-requests
+    - pytest
+    - coverage
+    - flake8
