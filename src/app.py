@@ -26,13 +26,16 @@ import plotly.express as px
 
 from pathlib import Path
 from fnmatch import fnmatch
+from dotenv import load_dotenv
 from collections import defaultdict
 from plotly.colors import qualitative
 
+# Add src to path to allow app to use absolute imports
+src_path = Path('..')
+sys.path.append(str(src_path.resolve()))
+
 from src.paths import get_path_to
 from src.colors import get_palette, rgb_to_hex
-
-from dotenv import load_dotenv
 
 load_dotenv()
 DATA_PATH = Path(os.getenv('DATA_PATH', get_path_to('data')))
@@ -820,10 +823,6 @@ def main():
     # exit()
 
     # -- Orchestrate ---------------------------------------------------------
-
-    # Add src to path to allow app to use absolute imports
-    src_path = Path('..')
-    sys.path.append(str(src_path.resolve()))
 
     data_url = (
         "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/"

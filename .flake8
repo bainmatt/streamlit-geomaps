@@ -16,5 +16,7 @@ ignore =
     W503
     ; line break after binary operator
     W504
+    ; module level import not at top of file
+    E402
 exclude =
     src/archive/*
