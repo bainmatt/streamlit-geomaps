@@ -11,13 +11,13 @@
     "href": "notebooks/report.html#imports",
     "title": "ZIP code-level choropleth maps with Plotly and Streamlit",
     "section": "Imports",
-    "text": "Imports\n\n\nCode\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom IPython.display import display as display3\n\nfrom src.paths import get_path_to\nfrom src.stylesheet import customize_plots\nfrom src.inspection import display, display2"
+    "text": "Imports\n\n\nCode\nimport pandas as pd\nfrom IPython.display import display as display3\n\nfrom src.paths import get_path_to\nfrom src.stylesheet import customize_plots\nfrom src.inspection import display, display2"
   },
   {
     "objectID": "notebooks/report.html#the-dataset",
     "href": "notebooks/report.html#the-dataset",
     "title": "ZIP code-level choropleth maps with Plotly and Streamlit",
     "section": "The dataset",
-    "text": "The dataset\n\n\nLoad\nif 'data' not in locals():\n    # data = pd.read_csv(\n    #     get_path_to(\"data\", \"raw\", \"\"),\n    #     encoding='ISO-8859-1',\n    #     low_memory=False\n    # )\n    pass\nelse:\n    print(\"data loaded.\")\n\n\n\n\nDisplay a subset\n# data.sample(5)\n\n\n\n\nDisplay a summary\n# data.describe().round(1).reset_index()"
+    "text": "The dataset\n\n\nLoad\nif 'data' not in locals():\n    pass\nelse:\n    print(\"data loaded.\")\n\n\n\n\nDisplay a subset\n# data.sample(5)\n\n\n\n\nDisplay a summary\n# data.describe().round(1).reset_index()"
   }
 ]
