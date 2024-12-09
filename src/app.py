@@ -31,8 +31,10 @@ from collections import defaultdict
 from plotly.colors import qualitative
 
 # Add src to path to allow app to use absolute imports
-src_path = Path('..')
-sys.path.append(str(src_path.resolve()))
+src_path = Path(__file__).resolve().parent.parent
+sys.path.append(str(src_path))
+# src_path = Path('..')
+# sys.path.append(str(src_path.resolve()))
 
 from src.paths import get_path_to
 from src.colors import get_palette, rgb_to_hex
