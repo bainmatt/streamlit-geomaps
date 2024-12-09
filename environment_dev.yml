@@ -1,12 +1,12 @@
 # To create & activate environment {name} from this file, run:
 #
-#   (1.0) $ conda env create -f environment.yml
+#   (1.0) $ conda env create -f environment_dev.yml
 #   (2.0) $ conda activate {name}
 #
 # This env was pointed to, created and activated on, an external drive by:
 #
 #   (0.0) $ conda config --append envs_dirs /Volumes/Samsung_T5/conda-environments
-#   (1.0) $ conda env create --prefix /Volumes/Samsung_T5/conda-environments/streamlit-geomaps --file environment.yml
+#   (1.0) $ conda env create --prefix /Volumes/Samsung_T5/conda-environments/streamlit-geomaps --file environment_dev.yml
 #   (2.1) $ conda deactivate
 #   (2.2) $ conda activate /Volumes/Samsung_T5/conda-environments/streamlit-geomaps
 #   (2.3) <setting the vscode interpreter to that of the same environment>

@@ -23,7 +23,7 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       # - run: pip install jupyter
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements_dev.txt
 
       # - name: Render Specific File(s)
       #   run: quarto render notebooks/

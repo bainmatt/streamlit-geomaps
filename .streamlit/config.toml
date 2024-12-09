@@ -6,4 +6,4 @@
 # backgroundColor = "black"
 
 [runner]
-command = "pip install -r requirements_app.txt && streamlit run app.py"
+# command = "pip install -r requirements.txt && streamlit run app.py"

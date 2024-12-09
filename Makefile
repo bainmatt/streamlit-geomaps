@@ -99,9 +99,9 @@ update-pinned-requirements:
 	@echo "All requirements synchronized.\n"
 
 
-# Extract package names and versions from 'requirements.txt', then
+# Extract package names and versions from 'requirements_dev.txt', then
 # find lines with matching packages in a sub-requirements file and replace the
-# version with that in 'requirements.txt' if it is outdated.
+# version with that in 'requirements_dev.txt' if it is outdated.
 update-requirements-file:
 	@echo "> Checking requirements$(SUFF).txt..."
 	@echo "------------------------------------------------------------------"
@@ -138,7 +138,7 @@ update-requirements-file:
 upgrade-deps:
 	@echo "\n\n\nStep 1 / 3 : Upgrading dependencies..."
 	@echo "------------------------------------------------------------------"
-	conda env update --file environment.yml --prune
+	conda env update --file environment_dev.yml --prune
 
 	@echo "\n\n\nStep 2 / 3 : Running continuous integration..."
 	@echo "------------------------------------------------------------------"
@@ -151,7 +151,7 @@ upgrade-deps:
 		echo "(2) Revert to the previous revision (rev n = N - 1):\n"; \
 		echo "    conda install --revision n\n"; \
 		echo "(3) Pin packages causing the error at their nth rev in:\n"; \
-		echo "    (a) environment.yml"; \
+		echo "    (a) environment_dev.yml"; \
 		echo "    (b) the appropriate requirements_* file\n"; \
 		exit 1; \
 	fi

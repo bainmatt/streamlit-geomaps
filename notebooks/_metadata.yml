@@ -81,7 +81,7 @@ strip-comments: true
 code-links:
   - text: Lockfile
     icon: file-lock
-    href: https://github.com/bainmatt/streamlit-geomaps/tree/main/environment.yml
+    href: https://github.com/bainmatt/streamlit-geomaps/tree/main/environment_dev.yml
 
 # urls:
 #   - pandas: https://pandas.pydata.org/pandas-docs/stable/
