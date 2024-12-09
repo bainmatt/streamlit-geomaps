@@ -5,11 +5,15 @@ To run the streamlit app:
 
     $ streamlit run src/app.py
 
+To locally run the GitHub-hosted app:
+
+    $ streamlit run https://raw.githubusercontent.com/bainmatt/streamlit-geomaps/main/src/app.py
+
 """
+
 import os
 import re
 import json
-import gdown
 import geojson
 import requests
 import urllib.request
@@ -30,109 +34,12 @@ from src.colors import get_palette, rgb_to_hex
 from dotenv import load_dotenv
 
 load_dotenv()
-
-GDRIVE_URL = (
-    "https://drive.google.com/drive/folders/"
-    "1Zdt8bkAWc_iIwSCUNhkXEjXxPLraKkxd?usp=sharing"
-)
 DATA_PATH = Path(os.getenv('DATA_PATH', get_path_to('data')))
+
 lookup_dict_type = dict[str, dict[str, list[str]]]
 
 
-def download_gdrive_folder(
-    folder_url: str = GDRIVE_URL,
-    download_path: Path = get_path_to('data'),
-    download_dir: str = "geojson_files"
-):
-    """
-    Download all files from a Google Drive folder.
-    """
-    download_path = download_path / download_dir
-    download_path.mkdir(parents=True, exist_ok=True)
-
-    print(f'Downloading folder from: {folder_url}')
-    gdown.download_folder(
-        folder_url, output=str(download_path), quiet=False
-    )
-
-
-def extract_zip_lookup(
-    input_file: str,
-    data_path: Path = DATA_PATH
-) -> lookup_dict_type:
-    """
-    Extract a lookup dictionary with the structure
-    {ste_name: {coty_name: [zcta5_code]}} from the GeoJSON data.
-
-    Parameters
-    ----------
-    input_file : str
-        Name of the GeoJSON file to parse.
-
-    data_path : Path, default=DATA_PATH
-        Path to the directory where the GeoJSON file is located.
-
-    Returns
-    -------
-    dict
-        A nested dictionary with states as keys and counties as values,
-        containing lists of ZCTA codes.
-    """
-    input_filepath = data_path / input_file
-    zcta_lookup: dict[str, dict[str, list[str]]] = defaultdict(
-        lambda: defaultdict(list)
-    )
-
-    # Open and read the local GeoJSON file
-    with open(input_filepath, 'r') as f:
-        geojson_data = json.load(f)
-
-    # Extract states, counties, and ZCTA codes
-    for feature in geojson_data.get('features', []):
-        properties = feature.get('properties', {})
-        state = properties.get('ste_name', [None])[0]
-        county = properties.get('coty_name', [None])[0]
-        zcta_code = properties.get('zcta5_code', [None])[0]
-
-        # Check for valid state, county, and zcta_code
-        if state and county and zcta_code:
-            zcta_lookup[state][county].append(zcta_code)
-
-    return dict(zcta_lookup)
-
-
-def save_lookup_dict(
-    lookup_dict: lookup_dict_type,
-    output_file: str,
-    output_path: Path = DATA_PATH,
-    output_dir: str | None = None
-) -> None:
-    """
-    Save the lookup dictionary to a JSON file.
-    """
-    if output_dir:
-        output_filepath = output_path / output_dir / output_file
-    else:
-        output_filepath = output_path / output_file
-    with open(output_filepath, 'w') as f:
-        json.dump(lookup_dict, f, indent=4)
-
-
-def load_lookup_dict(
-    input_file: str,
-    input_path: Path = DATA_PATH,
-    input_dir: str | None = None
-) -> lookup_dict_type:
-    """
-    Load the lookup dictionary from a JSON file.
-    """
-    if input_dir:
-        input_filepath = input_path / input_dir / input_file
-    else:
-        input_filepath = input_path / input_file
-    with open(input_filepath, 'r') as f:
-        lookup_dict: lookup_dict_type = json.load(f)
-    return lookup_dict
+# -- Get the data ------------------------------------------------------------
 
 
 def download_gh_files(
@@ -299,13 +206,21 @@ def download_data(
     # Data saved to /...geojson
     """
     if output_dir:
-        output_filepath = output_path / output_dir / output_file
+        output_path = output_path / output_dir
+        output_filepath = output_path / output_file
     else:
-        output_filepath = output_path / "downloads" / output_file
+        # output_path = output_path / "downloads"
+        output_filepath = output_path / output_file
+
+    if os.path.isfile(output_filepath):
+        print(f"File already exists at {output_filepath}.")
+        return
 
     response = requests.get(url)
 
     if response.status_code == 200:
+        os.makedirs(output_path, exist_ok=True)
+
         with open(output_filepath, 'wb') as file:
             file.write(response.content)
         print(f"Data saved to {output_filepath}")
@@ -314,6 +229,90 @@ def download_data(
             f"Failed to retrieve data from {url}."
             f"Status code: {response.status_code}"
         )
+
+
+# -- Process -----------------------------------------------------------------
+
+
+@st.cache_data
+def extract_zip_lookup(
+    input_file: str,
+    data_path: Path = DATA_PATH
+) -> lookup_dict_type:
+    """
+    Extract a lookup dictionary with the structure
+    {ste_name: {coty_name: [zcta5_code]}} from the GeoJSON data.
+
+    Parameters
+    ----------
+    input_file : str
+        Name of the GeoJSON file to parse.
+
+    data_path : Path, default=DATA_PATH
+        Path to the directory where the GeoJSON file is located.
+
+    Returns
+    -------
+    dict
+        A nested dictionary with states as keys and counties as values,
+        containing lists of ZCTA codes.
+    """
+    input_filepath = data_path / input_file
+    zcta_lookup: dict[str, dict[str, list[str]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+
+    # Open and read the local GeoJSON file
+    with open(input_filepath, 'r') as f:
+        geojson_data = json.load(f)
+
+    # Extract states, counties, and ZCTA codes
+    for feature in geojson_data.get('features', []):
+        properties = feature.get('properties', {})
+        state = properties.get('ste_name', [None])[0]
+        county = properties.get('coty_name', [None])[0]
+        zcta_code = properties.get('zcta5_code', [None])[0]
+
+        # Check for valid state, county, and zcta_code
+        if state and county and zcta_code:
+            zcta_lookup[state][county].append(zcta_code)
+
+    return dict(zcta_lookup)
+
+
+def save_lookup_dict(
+    lookup_dict: lookup_dict_type,
+    output_file: str,
+    output_path: Path = DATA_PATH,
+    output_dir: str | None = None
+) -> None:
+    """
+    Save the lookup dictionary to a JSON file.
+    """
+    if output_dir:
+        output_filepath = output_path / output_dir / output_file
+    else:
+        output_filepath = output_path / output_file
+    with open(output_filepath, 'w') as f:
+        json.dump(lookup_dict, f, indent=4)
+
+
+@st.cache_data
+def load_lookup_dict(
+    input_file: str,
+    input_path: Path = DATA_PATH,
+    input_dir: str | None = None
+) -> lookup_dict_type:
+    """
+    Load the lookup dictionary from a JSON file.
+    """
+    if input_dir:
+        input_filepath = input_path / input_dir / input_file
+    else:
+        input_filepath = input_path / input_file
+    with open(input_filepath, 'r') as f:
+        lookup_dict: lookup_dict_type = json.load(f)
+    return lookup_dict
 
 
 def parse_geojson_zips(
@@ -395,6 +394,7 @@ def parse_geojson_zips(
                 print(f"Saved: {output_filepath}")
 
 
+@st.cache_data
 def parse_geojson_states(
     input_file: str,
     zip_lookup: lookup_dict_type,
@@ -532,6 +532,7 @@ def get_available_regions(
     ]
 
 
+@st.cache_data
 def load_geojson_as_json(
     region: str,
     data_path: Path = DATA_PATH,
@@ -551,6 +552,7 @@ def load_geojson_as_json(
         return geojson.load(f)
 
 
+@st.cache_data
 def load_geojson_as_gdf(
     region: str,
     data_path: Path = DATA_PATH,
@@ -572,7 +574,11 @@ def load_geojson_as_gdf(
         return None
 
 
+# -- Plot --------------------------------------------------------------------
+
+
 def plot_zips(
+    state_list: list[str],
     data_path: Path = DATA_PATH,
     data_dir: str = "geojson_files"
 ) -> None:
@@ -581,15 +587,17 @@ def plot_zips(
 
     Parameters
     ----------
+    state_list : list[str]
+        A list of valid state names to choose from a dropdown.
+
     data_path : Path
         Path to the directory containing the data files.
 
     data_dir : str
         Subdirectory where parsed GeoJSON files are stored.
     """
-    area_list = get_available_regions(data_path, data_dir)
-    state_list = [area for area in area_list if '_' not in area]
-    county_list = [area for area in area_list if area not in state_list]
+    # area_list = get_available_regions(data_path, data_dir)
+    # state_list = [area for area in area_list if '_' not in area]
 
     # Primary dropdown for state selection
     selected_state = st.selectbox(
@@ -597,7 +605,13 @@ def plot_zips(
         sorted(state_list)
         # sorted(get_available_regions(data_path, data_dir))
     )
+
+    # Dynamically parse the constituent counties and zip codes
+    extract_state_data(selected_state)
+
     # Secondary dropdown for county selection
+    area_list = get_available_regions(data_path, data_dir)
+    county_list = [area for area in area_list if area not in state_list]
     filtered_county_list = [
         cty for cty in county_list if selected_state in cty
     ]
@@ -633,7 +647,9 @@ def plot_zips(
     # Generate discrete color palette
     discrete_palette = [
         rgb_to_hex(color)
-        for color in get_palette("plasma", n_colors=len(df))
+        for color in get_palette(
+            "plasma", n_colors=len(df)
+        )  # type: ignore[union-attr]
     ]
     discrete_color_scale = {
         df['id'][i]: discrete_palette[i] for i in range(len(df))
@@ -771,6 +787,8 @@ def extract_state_data(
     Perform parsing at the state and county level for the state given by name.
     """
     output_path = data_path / output_dir
+    os.makedirs(output_path, exist_ok=True)
+
     existing_states = [
         os.path.splitext(region)[0].lower()
         for region in os.listdir(output_path)
@@ -800,40 +818,36 @@ def main():
 
     # exit()
 
-    # -- Run once ------------------------------------------------------------
-
-    # 0. Download data
-
-    # download_gh_files(
-    #     {"codeforgermany/click_that_hood/main": "public/data/*.geojson"},
-    #     save=True
-    # )
-    # url = (
-    #     "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/"
-    #     "georef-united-states-of-america-zcta5/exports/geojson"
-    # )
-    # download_data(url, output_file="georef_united_states.geojson")
-
-    # 1. Extract a {state: county: [zip]} lookup table
-
-    # zip_lookup = extract_zip_lookup(input_file="georef_united_states.geojson")
-    # save_lookup_dict(zip_lookup, 'zip_lookup.json')
-
-    # For use in a cloud-based application
-    geojson_folder = Path(DATA_PATH / 'geojson_files')
-    if not geojson_folder.exists() or not any(geojson_folder.iterdir()):
-        download_gdrive_folder()
-
     # -- Orchestrate ---------------------------------------------------------
 
-    # 2. Parse GeoJSON files
+    data_url = (
+        "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/"
+        "georef-united-states-of-america-zcta5/exports/geojson"
+    )
+    data_file = "georef_united_states.geojson"
+    data_filepath = DATA_PATH / data_file
 
+    if not os.path.isfile(data_filepath):
+        # 0. Download data
+        download_data(url=data_url, output_file=data_file)
+        # download_gh_files(
+        #     {"codeforgermany/click_that_hood/main": "public/data/*.geojson"},
+        #     output_dir="click_that_hood_files",
+        #     save=True
+        # )
+
+        # 1. Extract a {state: county: [zip]} lookup table
+        zip_lookup = extract_zip_lookup(input_file=data_file)
+        save_lookup_dict(zip_lookup, 'zip_lookup.json')
+    else:
+        zip_lookup = load_lookup_dict('zip_lookup.json')
+
+    # 2. Parse GeoJSON files
     # extract_state_data('New Mexico')
 
-    # 4. Run app
-
+    # 3. Run app
+    plot_zips(state_list=list(zip_lookup.keys()))
     # plot_hoods(data_dir='click_that_hood_files_small')
-    plot_zips()
 
 
 if __name__ == "__main__":

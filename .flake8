@@ -18,4 +18,3 @@ ignore =
     W504
 exclude =
     src/archive/*
-    ; src/analysis.py

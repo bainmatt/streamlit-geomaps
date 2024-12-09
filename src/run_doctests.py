@@ -52,7 +52,7 @@ if __name__ == "__main__":
         'src.stylesheet',
         'src.workflow',
         'src.inspection',
-        'src.analysis',
+        'src.util',
     )
 
     run_doctest_suite(MODULES_TO_TEST)

@@ -257,7 +257,12 @@ def create_gradient(
     r = np.linspace(rgb1[0], rgb2[0], n_colors)
     g = np.linspace(rgb1[1], rgb2[1], n_colors)
     b = np.linspace(rgb1[2], rgb2[2], n_colors)
-    gradient = list(zip(r, g, b))
+
+    # gradient = list(zip(r, g, b))
+    gradient = [
+        (float(r), float(g), float(b))
+        for r, g, b in zip(r, g, b)
+    ]
 
     if as_hex:
         return [rgb_to_hex(rgb) for rgb in gradient]
@@ -298,7 +303,11 @@ def get_palette(
     >>> print(pal)
     [(0.78, 0.86, 0.94), (0.42, 0.68, 0.84), (0.13, 0.44, 0.71)]
     """
-    return sns.color_palette(palette, n_colors=n_colors, as_cmap=as_cmap)
+    return sns.color_palette(  # type: ignore[no-any-return]
+        palette,
+        n_colors=n_colors,
+        as_cmap=as_cmap
+    )
 
 
 def create_monochromatic_palette(
@@ -389,6 +398,9 @@ def spherical_to_rgb(
     --------
     >>> from src.colors import spherical_to_rgb
     """
+    theta = float(theta)
+    psi = float(psi)
+
     d2r       = np.pi / 180.
     theta_rad = theta * d2r
     psi_rad   = psi * d2r
@@ -440,8 +452,8 @@ def get_spherical_palette(n_colors: int) -> list[RGBType]:
                 new_color = spherical_to_rgb(
                     shift=center,
                     radius=radius,
-                    theta=theta,
-                    psi=psi
+                    theta=float(theta),
+                    psi=float(psi)
                 )
                 if new_color not in color_list:
                     new_colors.append(new_color)
@@ -505,7 +517,7 @@ def get_cubic_palette(n_colors: int) -> list[RGBType]:
         for i in grid:
             for j in grid:
                 for k in grid:
-                    new_color = (i, j, k)
+                    new_color = (float(i), float(j), float(k))
                     if new_color not in color_list:
                         new_colors.append(new_color)
 
@@ -572,11 +584,13 @@ def display_palette(
     ... ])
     """
     if isinstance(gradient, ListedColormap):
-        gradient = gradient.colors
+        gradient = gradient.colors  # type: ignore[assignment]
 
     # palplot doesn't handle LinearSegmented cmaps like "Blues" and "PiYG"
     elif isinstance(gradient, LinearSegmentedColormap):
-        gradient = [gradient(i / (30 - 1)) for i in range(30)]
+        gradient = [
+            gradient(i / (30 - 1)) for i in range(30)
+        ]  # type: ignore[assignment]
 
     sns.palplot(gradient)
     plt.show()
@@ -621,6 +635,9 @@ def _process_rgb(
     ... )
     [(255, 0, 0), (0, 128, 255)]
     """
+    if isinstance(gradient, ListedColormap):
+        gradient = list(gradient.colors)  # type: ignore[arg-type]
+
     if isinstance(gradient, tuple):
         gradient = [gradient]
 
@@ -658,7 +675,6 @@ def _process_rgb(
 
 
 def main():
-    # Comment out (2) to run all tests in script; (1) to run specific tests
     import doctest
     doctest.testmod(verbose=True)
 

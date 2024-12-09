@@ -2,10 +2,8 @@
 Plotting customization.
 """
 
-# import numpy as np
 import matplotlib as mpl
 from cycler import cycler
-# import matplotlib.pyplot as plt
 
 
 def customize_plots() -> None:
@@ -264,7 +262,6 @@ def customize_plots() -> None:
 
 
 def main():
-    # Comment out (2) to run all tests in script; (1) to run specific tests
     import doctest
     doctest.testmod(verbose=True)
 

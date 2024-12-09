@@ -217,7 +217,6 @@ def display2(
 
 
 def main():
-    # Comment out (2) to run all tests in script; (1) to run specific tests
     import doctest
     doctest.testmod(verbose=True)
 

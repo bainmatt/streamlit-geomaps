@@ -6,22 +6,6 @@ import sqlite3
 from typing import Optional, Tuple
 from contextlib import contextmanager
 
-# from src.paths import get_path_to
-
-# -- I/O utilities -----------------------------------------------------------
-
-# import pandas as pd
-# print(pd.read_csv(
-#     "data/raw/PBJ_Daily_Nurse_Staffing_Q1_2024.zip",
-#     encoding='ISO-8859-1',
-#     low_memory=False
-# ))
-# print(pd.read_csv(
-#     get_path_to("data", "/raw/PBJ_Daily_Nurse_Staffing_Q1_2024.zip"),
-#     encoding='ISO-8859-1',
-#     low_memory=False
-# ))
-
 # -- SQL utilities -----------------------------------------------------------
 
 
@@ -129,25 +113,13 @@ class DBManager:
 
 
 def main():
-    # Comment out (2) to run all tests in script; (1) to run specific tests
     import doctest
     doctest.testmod(verbose=True)
 
     # from src.workflow import doctest_function
     # doctest_function(DBManager, globs=globals())
 
-    # One-off tests
-    # import pandas as pd
-    # pd.read_csv(
-    #     "data/raw/PBJ_Daily_Nurse_Staffing_Q1_2024.zip",
-    #     encoding='ISO-8859-1',
-    #     low_memory=False
-    # )
-
-    # from pathlib import Path
-    # print(Path(__file__))
-
-    return None
+    pass
 
 
 if __name__ == "__main__":

@@ -1,28 +1,22 @@
 jupyter>=1.1.1
 requests>=2.32.3
 python-dotenv>=1.0.1
+pandas>=2.2.3
 
-numpy>=1.24.2
-scipy>=1.9.3
-pandas>=2.0.0
-
-matplotlib>=3.6.2
-seaborn>=0.12.1
+matplotlib>=3.9.3
 plotly>=5.24.1
-geopandas>=0.12.1
-geopy>=2.4.1
+geopandas>=1.0.1
+# geopy>=2.4.1
 geojson>=3.1.0
+seaborn>=0.13.2
 streamlit>=1.40.2
-gdown>=5.2.0
-
-# great-tables>=0.11.1
-# polars>=0.14.28
-# pyarrow>=17.0.0
+scipy>=1.14.1
+# gdown>=5.2.0
 
 mypy>=1.13.0
 typing_extensions>=4.12.2
 pandas-stubs>=2.2.3.241126
 types-requests>=2.32.0.20241016
 pytest>=8.3.4
-coverage>=7.6.8
+coverage>=7.6.9
 flake8>=7.1.1
