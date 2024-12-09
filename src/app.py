@@ -14,6 +14,7 @@ To locally run the GitHub-hosted app:
 import os
 import re
 import sys
+import time
 import json
 import geojson
 import requests
@@ -33,8 +34,6 @@ from plotly.colors import qualitative
 # Add src to path to allow app to use absolute imports
 src_path = Path(__file__).resolve().parent.parent
 sys.path.append(str(src_path))
-# src_path = Path('..')
-# sys.path.append(str(src_path.resolve()))
 
 from src.paths import get_path_to
 from src.colors import get_palette, rgb_to_hex
@@ -606,32 +605,51 @@ def plot_zips(
     # state_list = [area for area in area_list if '_' not in area]
 
     # Primary dropdown for state selection
+    st.subheader('1. Select a state', divider='rainbow')
     selected_state = st.selectbox(
-        'Select a state',
-        sorted(state_list)
+        label='Select a state',
+        options=sorted(state_list),
+        label_visibility="collapsed"
         # sorted(get_available_regions(data_path, data_dir))
     )
+    selected_state_fname = selected_state.replace(" ", "-")
 
     # Dynamically parse the constituent counties and zip codes
-    extract_state_data(selected_state)
+    with st.status("Running ...", expanded=True) as status:
+        st.write("Parsing the data ...")
+        time.sleep(1)
+        extract_state_data(selected_state_fname)
+    status.update(label="Status", state="complete", expanded=False)
 
     # Secondary dropdown for county selection
     area_list = get_available_regions(data_path, data_dir)
     county_list = [area for area in area_list if area not in state_list]
     filtered_county_list = [
-        cty for cty in county_list if selected_state in cty
+        cty for cty in county_list if selected_state_fname in cty
     ]
+    st.subheader('2. Select a county', divider='rainbow')
+    formatted_county_list = sorted([
+        county.split("_")[-1].replace("-", " ")
+        for county in filtered_county_list
+    ])
     selected_county = st.selectbox(
-        "Select a county",
-        ['All'] + sorted(filtered_county_list)
-        # df['id']
+        label="Select a county",
+        options=['All'] + formatted_county_list,
+        label_visibility="collapsed"
     )
+    if selected_county != 'All':
+        selected_county_fname = (
+            selected_state_fname + "_" + selected_county.replace(" ", "-")
+        )
+
     if selected_county == 'All':
-        selected_area = selected_state
+        selected_area = selected_state_fname
+        selected_area_name = selected_state
         id_field = 'coty_name'
         id_label = 'County'
     else:
-        selected_area = selected_county
+        selected_area = selected_county_fname
+        selected_area_name = selected_county + ', ' + selected_state
         id_field = 'zcta5_code'
         id_label = 'ZIP'
 
@@ -661,6 +679,13 @@ def plot_zips(
         df['id'][i]: discrete_palette[i] for i in range(len(df))
     }
 
+    # Compute centroids
+    # gdf_projected = gdf.to_crs(epsg=32633)
+    # centroids = gdf_projected.geometry.centroid
+    centroids = gdf.geometry.centroid
+    mean_lat = centroids.y.mean()
+    mean_lon = centroids.x.mean()
+
     # Create a choropleth map using Plotly/Mapbox
     fig = px.choropleth_mapbox(
         df,
@@ -672,12 +697,17 @@ def plot_zips(
         hover_data={
             "id": False
         },
-        title=f"Map of {', '.join(selected_area.split('_')[::-1]).title()}",
-        zoom=7,
+        title=f"Map of {selected_area_name}",
+        # title=f"Map of {', '.join(selected_area.split('_')[::-1]).title()}",
+        zoom=5 if selected_county == 'All' else 7,
         center={
-            "lat": gdf.geometry.centroid.y.mean(),
-            "lon": gdf.geometry.centroid.x.mean()
+            "lat": mean_lat,
+            "lon": mean_lon
         },
+        # center={
+        #     "lat": gdf.geometry.centroid.y.mean(),
+        #     "lon": gdf.geometry.centroid.x.mean()
+        # },
         mapbox_style="carto-positron",  # {open-street-map, carto-positron}
         color_discrete_map=discrete_color_scale,
         # color_continuous_scale="Plasma",
@@ -685,23 +715,45 @@ def plot_zips(
 
     # Customize hover/opacity, layout/legend/margins
     fig.update_traces(
-        hovertemplate="<b>Area:</b> %{hovertext}<extra></extra>",
-        # hovertemplate="<b>ZIP:</b> %{hovertext}<extra></extra>",
-        marker_opacity=.5,
+        hovertemplate=(
+            "<b>County: </b> %{hovertext}<extra></extra>"
+            if selected_county == 'All' else
+            "<b>ZIP: </b> %{hovertext}<extra></extra>"
+        ),
+        marker_opacity=.3,
     )
     fig.update_layout(
-        # mapbox=dict(layers=[{
-        #     "source": gdf.geometry.__geo_interface__,
-        #     "type": "fill",
-        #     "color": "rgba(0,0,0,0)",  # Bg transparency (last value 0-1)
-        # }]),
+        mapbox=dict(layers=[{
+            # "source": gdf.geometry.__geo_interface__,
+            # "type": "fill",
+            # "color": "rgba(0,0,0,0)",  # Bg transparency (last value 0-1)
+            # "opacity": 1.
+        }]),
         margin={"r": 0, "t": 40, "l": 0, "b": 0},
         legend_title=dict(text=id_label),
-        legend_itemclick="toggle",
-        legend_itemdoubleclick="toggleothers",
-        # coloraxis_colorbar=dict(title="ZIP Codes"),  # For continuous
-        # coloraxis_showscale=False,
+        legend_itemclick=False,
+        legend_itemdoubleclick=False,
+        # legend_itemclick="toggle",
+        # legend_itemdoubleclick="toggleothers",
     )
+
+    # TODO: archive
+    # Button to toggle the legend visibility
+    # if 'legend_visible' not in st.session_state:
+    #     st.session_state.legend_visible = False
+    # legend_visible = st.sidebar.checkbox(
+    #     'Show Legend', value=st.session_state.legend_visible
+    # )
+    # st.session_state.legend_visible = legend_visible
+    # fig.update_layout(showlegend=st.session_state.legend_visible)
+
+    # Legend visibility button
+    if 'legend_visible' not in st.session_state:
+        st.session_state.legend_visible = False
+    # *_, column = st.columns(8)
+    if st.button("Toggle Legend"):
+        st.session_state.legend_visible = not st.session_state.legend_visible
+    fig.update_layout(showlegend=st.session_state.legend_visible)
 
     # **********
 
@@ -716,7 +768,7 @@ def plot_zips(
 
     # **********
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def plot_hoods(
@@ -826,6 +878,54 @@ def main():
 
     # -- Orchestrate ---------------------------------------------------------
 
+    # Set up page title and icon
+    st.set_page_config(
+        page_title="Zippy Geomaps",
+        page_icon=":earth_americas:",
+        layout="wide",
+    )
+    st.title("Zippy Geomaps")
+
+    with st.expander('About this app'):
+        st.markdown('**What can this app do?**')
+        st.info(
+            'WIP.'
+            ''
+        )
+
+        st.markdown('**How to use the app?**')
+        st.warning(
+            'WIP.'
+        )
+
+        st.markdown('**Under the hood**')
+        st.markdown('Data sets:')
+        st.code(
+            '''- WIP.''',
+            language='markdown'
+        )
+
+        st.markdown('Libraries used:')
+        st.markdown(
+            '''
+            - [`Pandas`](https://pandas.pydata.org/docs/) for data wrangling
+            - [`Plotly`](https://plotly.com/) for interactive plots
+            - [`Streamlit`](https://streamlit.io/) for user interface
+            '''
+        )
+
+    with st.sidebar:
+        global_data = st.toggle('Use global dataset')
+        if global_data:
+            download_gh_files(
+                {
+                    "codeforgermany/click_that_hood/main":
+                        "public/data/*.geojson"
+                },
+                output_dir="click_that_hood_files",
+                save=True
+            )
+
     data_url = (
         "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/"
         "georef-united-states-of-america-zcta5/exports/geojson"
@@ -833,20 +933,21 @@ def main():
     data_file = "georef_united_states.geojson"
     data_filepath = DATA_PATH / data_file
 
-    if not os.path.isfile(data_filepath):
-        # 0. Download data
-        download_data(url=data_url, output_file=data_file)
-        # download_gh_files(
-        #     {"codeforgermany/click_that_hood/main": "public/data/*.geojson"},
-        #     output_dir="click_that_hood_files",
-        #     save=True
-        # )
+    with st.status("Running ...", expanded=True) as status:
+        st.write("Loading data ...")
+        time.sleep(1)
 
-        # 1. Extract a {state: county: [zip]} lookup table
-        zip_lookup = extract_zip_lookup(input_file=data_file)
-        save_lookup_dict(zip_lookup, 'zip_lookup.json')
-    else:
-        zip_lookup = load_lookup_dict('zip_lookup.json')
+        if not os.path.isfile(data_filepath):
+            # 0. Download data
+            download_data(url=data_url, output_file=data_file)
+
+            # 1. Extract a {state: county: [zip]} lookup table
+            zip_lookup = extract_zip_lookup(input_file=data_file)
+            save_lookup_dict(zip_lookup, 'zip_lookup.json')
+        else:
+            zip_lookup = load_lookup_dict('zip_lookup.json')
+
+    status.update(label="Status", state="complete", expanded=False)
 
     # 2. Parse GeoJSON files
     # extract_state_data('New Mexico')

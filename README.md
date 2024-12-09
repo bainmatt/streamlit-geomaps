@@ -1,15 +1,31 @@
-# streamlit-geomaps
+# :earth_americas: streamlit-geomaps
 
 A choropleth map divides a region into polygons, each outlining a region of
 interest such as an administrative border or ZIP code.
 This repository contains configuration and source files used to generate
 an interactive choropleth map of the United States, with county-
 and ZIP code-level resolution.
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://zippy-geomaps.streamlit.app/)
 <!--
 ## Analysis
 
 View the report [here](https://bainmatt.github.io/streamlit-geomaps/notebooks/report.html).
  -->
+
+## Getting started
+
+1. Install the requirements
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+2. Run the app
+
+    ```bash
+    streamlit run streamlit_app.py
+    ```
 
 ## Example
 
@@ -24,8 +40,8 @@ codes:
 
 ## Tools
 
-This project uses the following tools:
+Tools used:
 
-- Data wrangling and preprocessing: [`Pandas`](https://pandas.pydata.org/docs/)
-- Interactive plots: [`Plotly`](https://plotly.com/)
-- Application build and deployment: [`Streamlit`](https://streamlit.io/)
+- [`Pandas`](https://pandas.pydata.org/docs/) for data wrangling
+- [`Plotly`](https://plotly.com/) for interactive plots
+- [`Streamlit`](https://streamlit.io/) for user interface
