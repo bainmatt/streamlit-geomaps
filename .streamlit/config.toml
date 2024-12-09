@@ -1,0 +1,9 @@
+[client]
+# showErrorDetails = false
+
+[theme]
+# primaryColor = "#F63366"
+# backgroundColor = "black"
+
+[runner]
+command = "pip install -r requirements_app.txt && streamlit run app.py"

@@ -6,15 +6,6 @@
 #
 #   $ docker run -p 8501:8501 -v $(pwd):/app streamlit-geomaps
 #
-# Example project structure:
-#   /data
-#   /geojsons
-#   state_names.txt
-#   /src
-#     app.py
-#   requirements.txt
-#   Dockerfile
-#   report.qmd
 
 # Base image
 FROM python:3.11-slim
@@ -26,7 +17,7 @@ WORKDIR /app
 COPY . /app
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements_app.txt
 
 # Expose Streamlit default port
 EXPOSE 8501

@@ -21,7 +21,8 @@ notebooks/*.html
 *TODO.md
 
 # Streamlit configuration
-.streamlit/
+.streamlit/*
+!.streamlit/config.toml
 
 # --- System config/cache ---
 
