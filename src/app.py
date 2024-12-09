@@ -13,6 +13,7 @@ To locally run the GitHub-hosted app:
 
 import os
 import re
+import sys
 import json
 import geojson
 import requests
@@ -819,6 +820,10 @@ def main():
     # exit()
 
     # -- Orchestrate ---------------------------------------------------------
+
+    # Add src to path to allow app to use absolute imports
+    src_path = Path('..')
+    sys.path.append(str(src_path.resolve()))
 
     data_url = (
         "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/"
