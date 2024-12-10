@@ -910,10 +910,10 @@ def plot_zips(
                 type="buttons",
                 buttons=[style_button_carto, style_button_street],
                 direction="right",
-                x=.5,
+                x=0,
                 y=1,
                 xanchor="left",
-                yanchor="top",
+                yanchor="bottom",
                 showactive=True,
                 borderwidth=0,
                 bgcolor='#f5f5f5',
@@ -1326,6 +1326,10 @@ def main():
 
         # 2. Run app
 
+        ''
+        ''
+        ''
+
         plot_zips(state_list=list(zip_lookup.keys()))
 
     def run_wdi_app(region: str = 'all'):
@@ -1348,6 +1352,10 @@ def main():
 
         # 1. Run app
 
+        ''
+        ''
+        ''
+
         zip_lookup = load_lookup_dict('zip_lookup.json')
         plot_trajectories(state_list=list(zip_lookup.keys()), wdi_df=pop_df)
 
@@ -1362,10 +1370,6 @@ def main():
     #     run_local_app()
 
     run_local_app()
-
-    ''
-    ''
-    ''
 
     # if "region" not in st.session_state:
     #     region = 'all'
