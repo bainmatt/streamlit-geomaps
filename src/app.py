@@ -31,6 +31,7 @@ from fnmatch import fnmatch
 from dotenv import load_dotenv
 from collections import defaultdict
 from plotly.colors import qualitative
+from shapely.geometry import shape, mapping
 
 # Add src to path to allow app to use absolute imports
 src_path = Path(__file__).resolve().parent.parent
@@ -368,12 +369,22 @@ def parse_geojson_zips(
         for county, zcta_codes in counties.items():
             # Filter features matching ZCTA codes for this state and county
             matching_features = [
-                feature
+                # Reduce file size by simplifying geometries
+                {
+                    **feature,
+                    "geometry": mapping(
+                        shape(feature['geometry']).simplify(
+                            tolerance=0.01,
+                            preserve_topology=True
+                        )
+                    ),
+                }
+                # feature
                 for feature in geojson_data.get('features', [])
-                if feature.get(
-                    'properties', {}).get('ste_name', [None])[0] == state
-                and feature.get(
-                    'properties', {}).get('coty_name', [None])[0] == county
+                if feature.get('properties', {}).get(
+                    'ste_name', [None])[0] == state
+                and feature.get('properties', {}).get(
+                    'coty_name', [None])[0] == county
                 and feature.get('properties', {}).get(
                     'zcta5_code', [None])[0] in zcta_codes
             ]
@@ -484,9 +495,13 @@ def parse_geojson_states(
 
         # Reduce file size by simplifying geometries
         dissolved['geometry'] = dissolved['geometry'].simplify(
-            tolerance=0.01, preserve_topology=True
+            tolerance=0.01,
+            preserve_topology=True
         )
 
+        # dissolved['geometry'] = dissolved['geometry'].apply(
+        #     lambda geom: geom.simplify(tolerance=0.01).buffer(0)
+        # )
         # Retain only necessary columns
         # dissolved['county_name'] = county
         # dissolved = dissolved[['geometry', 'county_name']]
@@ -1031,6 +1046,12 @@ def plot_trajectories(
 
     # 1. Select range
 
+    # In regions with more than one value per year only keep max
+    wdi_df = wdi_df.loc[
+        wdi_df.groupby(['coty_name', 'year'])
+        ['population'].idxmax()
+    ].reset_index(drop=True)
+
     min_value = wdi_df['year'].min()
     max_value = wdi_df['year'].max()
 
@@ -1038,7 +1059,8 @@ def plot_trajectories(
         '**Step 2b**: Which years are you interested in?',
         min_value=min_value,
         max_value=max_value,
-        value=[min_value, max_value])
+        value=[min_value, max_value]
+    )
 
     # 2. Filter
 
@@ -1077,10 +1099,10 @@ def plot_trajectories(
     ]
 
     # In regions with more than one value per year only keep max
-    subfiltered_wdi_df = subfiltered_wdi_df.loc[
-        subfiltered_wdi_df.groupby(['coty_name', 'year'])
-        ['population'].idxmax()
-    ].reset_index(drop=True)
+    # subfiltered_wdi_df = subfiltered_wdi_df.loc[
+    #     subfiltered_wdi_df.groupby(['coty_name', 'year'])
+    #     ['population'].idxmax()
+    # ].reset_index(drop=True)
 
     # -- Run -----------------------------------------------------------------
 
@@ -1126,15 +1148,19 @@ def plot_trajectories(
                 "population_list": st.column_config.AreaChartColumn(
                     label="population over time",
                     help="The population trajectory over the selected range",
-                    y_min=0,
-                    y_max=30_000_000
+                    y_min=int(min_value),
+                    y_max=int(max_value),
+                    # y_max=f"{max_value}",
+                    # y_max=30_000_000
                 ),
                 "final_population": st.column_config.ProgressColumn(
                     label="final population",
                     help="The final population from the selected range",
-                    format="%f",
-                    min_value=0,
-                    max_value=30_000_000,
+                    format="%d",
+                    min_value=int(min_value),
+                    max_value=int(max_value),
+                    # max_value=f"{max_value}",
+                    # max_value=30_000_000
                 ),
             },
             hide_index=True,
@@ -1176,7 +1202,8 @@ def plot_trajectories(
                 growth = 'n/a'
                 # delta_color = 'off'
             else:
-                growth_rate = (last_pop / first_pop) - 1
+                growth_rate = (last_pop - first_pop) / first_pop
+                # growth_rate = (last_pop / first_pop) - 1
                 growth = f'{growth_rate:,.2f}x'
                 # delta_color = 'inverse' if growth_rate < 1 else 'normal'
 
@@ -1240,22 +1267,23 @@ def main():
 
     # Set up page title and icon
     st.set_page_config(
-        page_title="Geography",
+        page_title="ZIP Explorer",  # KPI Navigator
         page_icon=":earth_americas:",
         layout="centered",
     )
-    st.title(":earth_americas: Zippy Geomaps")
+    st.title(":earth_americas: Country and ZIP-level KPI navigator")
 
     st.markdown(
-        'Analyze country data in space and time '
+        'Analyze country data in space and time, '
         'at both the state and county level.'
     )
 
     with st.expander('About this app'):
         st.markdown('**What can this app do?**')
         st.info(
-            '- Explore the geography of state counties and county ZIP codes.\n'
-            '- Explore population over time across and within states.'
+            '- Explore the geography of states (county-level)'
+            'and counties (ZIP-level).\n'
+            '- Explore population over time, across and within states.'
         )
 
         st.markdown('**How to use the app?**')
