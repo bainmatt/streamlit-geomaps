@@ -1,4 +1,4 @@
-# :earth_americas: streamlit-geomaps
+# :earth_americas: Country and ZIP-level KPI navigator
 
 A choropleth map divides a region into polygons, each outlining a region of
 interest such as an administrative border or ZIP code.
@@ -6,7 +6,7 @@ This repository contains configuration and source files used to generate
 an interactive choropleth map of the United States, with county-
 and ZIP code-level resolution.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://zippy-geomaps.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://zipexplorer.streamlit.app/)
 <!--
 ## Analysis
 
